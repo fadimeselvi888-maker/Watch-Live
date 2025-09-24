@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Canlı TV</title>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<style>
+body {
+  margin: 0;
+  display: flex;
+  height: 100vh;
+  background: #121212;
+  font-family: Arial,sans-serif;
+  color: #fff;
+}
+.sidebar {
+  width: 200px;
+  background: #1a1a1a;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+hr {
+  border: none;
+  border-top: 1px solid #444;
+  margin: 12px 0;
+}
+.channel {
+  padding: 10px;
+  border-radius: 6px;
+  background: #2a2a2a;
+  margin-bottom: 8px;
+  cursor: pointer;
+  text-align: center;
+}
+.channel:hover {
+  background: #3a3a3a;
+}
+.channel.active {
+  background: #a64aff;
+  font-weight: bold;
+  color: #fff;
+}
+.content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+video {
+  width: 80%;
+  border-radius: 10px;
+  box-shadow:0 0 20px rgba(166,74,255,0.6);
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>Kanallar</h2>
+
+  <!-- TRT Kanalları -->
+  <div class="channel" onclick="playChannel('https://tv-trt1.medya.trt.com.tr/master.m3u8', this)">TRT 1</div>
+  <div class="channel" onclick="playChannel('https://tv-trtspor1.medya.trt.com.tr/master.m3u8', this)">TRT Spor</div>
+  <div class="channel" onclick="playChannel('https://tv-trthaber.medya.trt.com.tr/master.m3u8', this)">TRT Haber</div>
+  <div class="channel" onclick="playChannel('https://tv-trtbelgesel.medya.trt.com.tr/master.m3u8', this)">TRT Belgesel</div>
+
+  <hr>
+
+  <!-- Popüler Kanallar -->
+  <div class="channel" onclick="playChannel('https://tv8-live.daioncdn.net/tv8/tv8.m3u8', this)">TV8</div>
+  <div class="channel" onclick="playChannel('https://dogus-live.daioncdn.net/startv/startv_720p.m3u8', this)">Star TV</div>
+  <div class="channel" onclick="playChannel('https://www.iptvsaga.com/play/tv3/0041.m3u8', this)">ATV</div>
+  <div class="channel" onclick="playChannel('https://www.iptvsaga.com/play/tv3/0045.m3u8', this)">Show TV</div>
+</div>
+
+<div class="content">
+  <video id="tvPlayer" controls autoplay></video>
+</div>
+
+<script>
+const player = document.getElementById('tvPlayer');
+let current = null;
+
+function playChannel(url, el) {
+  if(current) current.classList.remove('active');
+  el.classList.add('active');
+  current = el;
+
+  if(Hls.isSupported()) {
+    const hls = new Hls();
+    hls.loadSource(url);
+    hls.attachMedia(player);
+    hls.on(Hls.Events.MANIFEST_PARSED, () => player.play());
+  } else if(player.canPlayType('application/vnd.apple.mpegurl')) {
+    player.src = url;
+    player.play();
+  }
+}
+</script>
+
+</body>
+</html>
